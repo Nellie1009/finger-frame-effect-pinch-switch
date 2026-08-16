@@ -1,72 +1,65 @@
 # Finger Frame Pinch Switch
 
-This repository is a modified version of Sophia Yang's original
-[`sophiamyang/finger-frame-effect`](https://github.com/sophiamyang/finger-frame-effect).
-The original live demo is available at
-https://sophiamyang.github.io/finger-frame-effect/.
+这个仓库是基于 Sophia Yang 的原项目
+[`sophiamyang/finger-frame-effect`](https://github.com/sophiamyang/finger-frame-effect)
+修改而来的版本。
 
-My changes keep the original MediaPipe + Canvas finger-frame effect, and add a
-gesture-driven filter switch: pinch both hands closed, then open them back into
-the frame gesture to advance to the next filter.
+原项目在线演示：
+https://sophiamyang.github.io/finger-frame-effect/
 
-Hold up both hands and frame a box with your index fingers and thumbs — a live
-effect is applied inside the quad your fingers form, like the camera-framing
-gesture effect.
+本版本保留了原项目的 MediaPipe 手部识别和 Canvas 实时滤镜效果，并新增了一个手势交互：
+双手拇指和食指闭合，再重新张开成取景框手势时，会自动切换到下一个滤镜。
 
-Built with [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
-(browser WASM/GPU, loaded from CDN) and plain Canvas 2D. No build step.
+## 效果
 
-## The finger-frame family
+举起双手，用食指和拇指围出一个取景框。页面会识别两只手的位置，并只在手指围出的四边形区域里应用实时视觉效果。
 
-| App | Generation | Latency |
-|---|---|---|
-| **this app** — live camera, local effects | Canvas 2D (Van Gogh, toon, glitch, …) | none |
-| [finger-frame-effect-ai](https://sophiamyang.github.io/finger-frame-effect-ai/) ([repo](https://github.com/sophiamyang/finger-frame-effect-ai)) — recorded video, AI restyle | Gemini Omni Flash (offline video edit) | minutes |
-| [finger-frame-effect-lucy](https://sophiamyang.github.io/finger-frame-effect-lucy/) ([repo](https://github.com/sophiamyang/finger-frame-effect-lucy)) — live camera, live AI | Decart Lucy 2.5 (realtime video-to-video) | ~real time |
+可用滤镜包括：
 
-## Run locally
+1. **Pixelate**：像素化马赛克
+2. **Blur**：模糊玻璃效果
+3. **Invert**：颜色反相
+4. **Noir**：高对比黑白
+5. **Glitch**：故障风、色差、扫描线
+6. **Toon**：卡通描边效果
+7. **Van Gogh**：实时梵高风格笔触效果
+
+切换方式：
+
+- 双手同时做“闭合 -> 张开”的动作，切换到下一个滤镜
+- 点击底部工具栏
+- 按键盘数字键 `1` 到 `7`
+
+## 本地运行
+
+这个项目没有构建步骤，直接用任意静态文件服务器打开即可。
 
 ```bash
 python3 -m http.server 8123
 ```
 
-Then open the local address served by Python in a browser and allow camera
-access. Any static file server works; camera access requires a secure origin
-such as HTTPS or a local loopback address.
+然后在浏览器里打开 Python 输出的本地预览地址，并允许摄像头权限。
 
-## How it works
+摄像头访问需要安全来源，例如 HTTPS 或本机回环地址。
 
-- The webcam feed is drawn mirrored to a full-screen canvas.
-- MediaPipe Hand Landmarker tracks up to 2 hands per frame (VIDEO mode, GPU).
-- When both hands make an open "L" (thumb and index spread apart, scaled by
-  hand size), the 4 tips (index + thumb of each hand) are sorted by angle
-  around their centroid into a quad.
-- Corners are exponentially smoothed and the effect fades in/out with a
-  presence value, so the frame doesn't pop or jitter.
-- The selected effect is drawn into the canvas clipped to the quad path, with
-  a dashed outline + corner dots on top.
+## Demo 模式
 
-## Effects
+如果不想打开摄像头，可以在本地预览地址后面加上 `?demo`。
 
-Switch by pinching both hands closed and opening them again, or use the toolbar
-or keys 1–7:
+Demo 模式会用合成动画画面和假的手部关键点替代摄像头输入。假手也会循环做闭合再张开的动作，所以可以不用摄像头测试滤镜切换。
 
-1. **Pixelate** — mosaic censor effect (downscale + nearest-neighbor upscale)
-2. **Blur** — frosted-glass blur
-3. **Invert** — color negative
-4. **Noir** — high-contrast black & white
-5. **Glitch** — chromatic aberration, slice displacement, scanlines
-6. **Toon** — cel-shaded cartoon version of the live feed: smoothed,
-   posterized color bands + dark ink outlines from edge detection
-7. **Van Gogh** — live painterly rendering (no AI): a smoothed orientation
-   field is built from the image gradients each frame, then curved brush
-   strokes follow it in two passes — a large brush for mass, a fine brush
-   that sharpens edges — with per-stroke color jitter and slowly drifting
-   swirl fields in flat areas. Moves with you in real time.
+## 实现方式
 
-## Demo mode (no camera)
+- 使用 [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) 在浏览器中识别双手关键点
+- 使用 Canvas 2D 绘制镜像摄像头画面
+- 根据两只手的食指尖和拇指尖计算取景框四个角点
+- 对角点做平滑处理，减少手部抖动带来的画面跳动
+- 将当前滤镜裁剪到手指围出的四边形区域内
+- 通过“闭合 -> 张开”的状态机判断滤镜切换手势，避免连续误触发
 
-Add `?demo` to the local preview URL to replace the camera with a synthetic
-animated feed and fake hand landmarks. The fake hands also pinch closed and
-reopen on a loop, so the gesture-based filter switching can be tested without a
-camera.
+## 致谢
+
+原始创意和主要实现来自
+[`sophiamyang/finger-frame-effect`](https://github.com/sophiamyang/finger-frame-effect)。
+
+这个仓库是在原项目基础上做的小改版，重点是加入更适合现场互动的手势切换滤镜功能。
