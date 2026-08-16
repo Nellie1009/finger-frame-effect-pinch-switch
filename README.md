@@ -1,6 +1,6 @@
-# Finger Frame
+# Finger Frame Pinch Switch
 
-This project is a modified version of Sophia Yang's original
+This repository is a modified version of Sophia Yang's original
 [`sophiamyang/finger-frame-effect`](https://github.com/sophiamyang/finger-frame-effect).
 The original live demo is available at
 https://sophiamyang.github.io/finger-frame-effect/.
@@ -14,7 +14,7 @@ effect is applied inside the quad your fingers form, like the camera-framing
 gesture effect.
 
 Built with [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
-(browser WASM/GPU, loaded from CDN) + plain Canvas 2D. No build step.
+(browser WASM/GPU, loaded from CDN) and plain Canvas 2D. No build step.
 
 ## The finger-frame family
 
@@ -24,14 +24,15 @@ Built with [MediaPipe Hand Landmarker](https://ai.google.dev/edge/mediapipe/solu
 | [finger-frame-effect-ai](https://sophiamyang.github.io/finger-frame-effect-ai/) ([repo](https://github.com/sophiamyang/finger-frame-effect-ai)) — recorded video, AI restyle | Gemini Omni Flash (offline video edit) | minutes |
 | [finger-frame-effect-lucy](https://sophiamyang.github.io/finger-frame-effect-lucy/) ([repo](https://github.com/sophiamyang/finger-frame-effect-lucy)) — live camera, live AI | Decart Lucy 2.5 (realtime video-to-video) | ~real time |
 
-## Run
+## Run locally
 
 ```bash
 python3 -m http.server 8123
 ```
 
-Then open http://localhost:8123 in a browser and allow camera access.
-(Any static file server works; `getUserMedia` requires localhost or HTTPS.)
+Then open the local address served by Python in a browser and allow camera
+access. Any static file server works; camera access requires a secure origin
+such as HTTPS or a local loopback address.
 
 ## How it works
 
@@ -65,6 +66,7 @@ or keys 1–7:
 
 ## Demo mode (no camera)
 
-http://localhost:8123/?demo replaces the camera with a synthetic animated feed
-and fake hand landmarks. The fake hands also pinch closed and reopen on a loop,
-so the gesture-based filter switching can be tested without a camera.
+Add `?demo` to the local preview URL to replace the camera with a synthetic
+animated feed and fake hand landmarks. The fake hands also pinch closed and
+reopen on a loop, so the gesture-based filter switching can be tested without a
+camera.
