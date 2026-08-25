@@ -7,6 +7,9 @@
 原项目在线演示：
 https://sophiamyang.github.io/finger-frame-effect/
 
+本版本 EdgeOne 在线演示：
+https://finger-frame-page-lbi1pgnw.edgeone.cool/
+
 本版本保留了原项目的 MediaPipe 手部识别和 Canvas 实时滤镜效果，并新增了一个手势交互：
 双手拇指和食指闭合，再重新张开成取景框手势时，会自动切换到下一个滤镜。
 
